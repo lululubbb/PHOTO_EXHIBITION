@@ -12,10 +12,6 @@ import mysql.connector
 from mysql.connector import Error
 from urllib.parse import unquote
 
-@app.template_filter()
-def url_decode(value):
-    return unquote(value)
-
 def connect_to_database():
     try:
         # 建立数据库连接

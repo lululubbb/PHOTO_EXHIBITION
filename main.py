@@ -7,8 +7,6 @@ app = Flask(__name__, template_folder='templates',static_url_path='/static')
 CORS(app)
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 print(app.template_folder)
-
-import mysql.connector
 from mysql.connector import Error
 from urllib.parse import unquote
 
@@ -143,8 +141,8 @@ def search():
 
             photo_data = [
                 {
-                    'time': photo[0],
-                    'place': photo[1],
+                    'time': photo[1],
+                    'place': photo[2],
                     'url': photo[3],
                     'theme': photo[4],
                     'description': photo[5]

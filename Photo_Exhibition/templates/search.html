@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图片浏览</title>
+    <link rel="stylesheet" href="../static/style.css">
+</head>
+<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exif-js/2.3.0/exif.min.js"></script>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="logo">PHOTO EXHIBITION</div>
+        <ul class="nav-links">
+            <li><a href="index.html">主页</a></li>
+            <li><a href="upload.html">图片上传</a>
+            <li><a href="search.html">图片浏览</a>
+
+        </ul>
+    </nav>
+    <!-- 图片浏览表单 -->
+    <section class="browse-section">
+        <h2>图片浏览</h2>
+        <form id="search-form" action="/photo" method="GET">
+            <label for="sort-order">按拍摄时间排序：</label>
+            <select name="order" id="sort-order">
+                <option value="asc">升序</option>
+                <option value="desc">降序</option>
+            </select>
+            <div class="search">
+                <input type="date" name="date" id="photo-date" >
+                <input type="text" name="location" id="searchLocation" placeholder="按地点搜索">
+                <input type="text" name="title" id="searchTheme" placeholder="按主题搜索">
+                <button type="reset" id="resetButton">重置</button>
+                <button type="submit" id="searchButton">搜索</button>
+            </div>
+        </form>
+    
+        <!-- 图片静态展示部分 -->
+        <div class="sta_exhibition">
+            <h3>所有图片</h3>
+            <div class="static-gallery">
+                <!-- 图片项 -->
+                <div class="info-card" style="display: none;">
+                </div>
+                </div>
+        </div>
+        
+    </section>
+    <script>async function fetchPhotos() {
+    try {
+        const response = await fetch('http://127.0.0.1:8035/get_photos');
+        if (!response.ok) throw new Error('Network response was not ok');
+        const data = await response.json();
+
+        const allGallery = document.querySelector('.static-gallery');
+        if (allGallery) {
+            allGallery.innerHTML = '';
+
+            data.all_photos.forEach(photo => {
+                const imageItem = document.createElement('div');
+                imageItem.className = 'image-item';
+
+                const img = document.createElement('img');
+                img.src = '/' + photo.url;
+                img.alt = photo.theme;
+
+                const infoCard = document.createElement('div');
+                infoCard.className = 'info-card';
+
+                // 加载图片并提取EXIF数据
+                img.onload = () => {
+                    EXIF.getData(img, function() {
+                        const date = EXIF.getTag(this, "DateTimeOriginal");
+                        const location = EXIF.getTag(this, "GPSLatitude") ? 
+                            `${EXIF.getTag(this, "GPSLatitude")}, ${EXIF.getTag(this, "GPSLongitude")}` : '未知地点';
+                        
+                        // 更新信息卡片内容
+                        infoCard.innerHTML = `
+                            <p>地点: <span class="location">${location}</span></p>
+                            <p>时间: <span class="time">${date}</span></p>
+                            <p>主题: <span class="theme">${photo.theme}</span></p>
+                            <p>描述: <span class="description">${photo.description}</span></p>
+                        `;
+                    });
+                };
+
+                const zoomButton = document.createElement('button');
+                zoomButton.className = 'zoom-button';
+                zoomButton.textContent = '➕';
+
+                img.onmouseover = () => infoCard.style.display = 'block';
+                img.onmouseout = () => infoCard.style.display = 'none';
+
+                imageItem.appendChild(img);
+                imageItem.appendChild(infoCard);
+                imageItem.appendChild(zoomButton);
+                allGallery.appendChild(imageItem);
+            });
+        }
+    } catch (error) {
+        console.error('Error fetching photos:', error);
+    }
+}
+</script>
+    <script src="../static/javascript.js"></script>
+</body>
+</html>

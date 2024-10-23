@@ -92,10 +92,8 @@ python main.py
 <img width="312" alt="image" src="https://github.com/user-attachments/assets/4fe82d8f-1aea-4fcf-ae3c-607d1fa0404f">
 
 根据拍摄地点检索
-<img width="285" alt="image" src="https://github.com/user-attachments/assets/918a945e-c357-40b8-b13c-e0774a753a1a">
-<img width="285" alt="image" src="https://github.com/user-attachments/assets/30b6270e-7e58-43b2-9153-10d315e7ee84">
 
-<img width="338" alt="image" src="https://github.com/user-attachments/assets/1b135d47-330f-48ec-82aa-9511902dc3b3">
+<img width="338" alt="image" src="https://github.com/user-attachments/assets/6352437a-a52b-4358-8d68-b644e5601f4b">
 
 根据照片主题检索
 

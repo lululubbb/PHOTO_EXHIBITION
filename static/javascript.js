@@ -14,6 +14,10 @@ function moveSlide(direction) {
     updateCarousel();
 }
 
+setInterval(() => {
+    moveSlide(1);
+}, 3000); // 每3秒自动切换
+
 async function fetchPhotos() {
     try {
         const response = await fetch('http://127.0.0.1:8035/get_photos');
@@ -26,7 +30,7 @@ async function fetchPhotos() {
             latestGallery.innerHTML = '';
             data.latest_photos.forEach(photo => {
                 const img = document.createElement('img');
-                img.src = '/' + photo.url;
+                img.src = 'http://127.0.0.1:8035/' + photo.url;
                 img.alt = photo.theme;
                 latestGallery.appendChild(img);
             });
@@ -42,7 +46,7 @@ async function fetchPhotos() {
                 imageItem.className = 'image-item';
 
                 const img = document.createElement('img');
-                img.src = '/' + photo.url;
+                img.src = 'http://127.0.0.1:8035/' + photo.url;
                 img.alt = photo.theme;
 
                 const infoCard = document.createElement('div');
@@ -151,7 +155,7 @@ document.getElementById('search-form').onsubmit = async function(event) {
             imageItem.className = 'image-item';
 
             const img = document.createElement('img');
-            img.src = '/' + photo.url;
+            img.src = 'http://127.0.0.1:8035/' + photo.url;
             img.alt = photo.theme;
 
             const infoCard = document.createElement('div');

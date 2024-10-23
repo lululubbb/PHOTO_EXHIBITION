@@ -15,8 +15,8 @@ def connect_to_database():
         # 建立数据库连接
         conn = mysql.connector.connect(
             host='localhost',
-            user='root',
-            password='bzq040330',
+            user='******',
+            password='******',
             database='photoexhibition'
         )
         print("MySQL Database connection was successful")

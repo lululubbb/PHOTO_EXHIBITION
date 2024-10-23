@@ -31,6 +31,7 @@ async function fetchPhotos() {
             data.latest_photos.forEach(photo => {
                 const img = document.createElement('img');
                 img.src = 'http://127.0.0.1:8035/' + photo.url;
+                console.log(" img.src",photo.url);
                 img.alt = photo.theme;
                 latestGallery.appendChild(img);
             });
@@ -48,7 +49,7 @@ async function fetchPhotos() {
                 const img = document.createElement('img');
                 img.src = 'http://127.0.0.1:8035/' + photo.url;
                 img.alt = photo.theme;
-
+                console.log(" img.src",photo.url);
                 const infoCard = document.createElement('div');
                 infoCard.className = 'info-card';
 
@@ -60,24 +61,20 @@ async function fetchPhotos() {
                 const day = String(date.getDate()).padStart(2, '0');
                 const hours = String(date.getHours()).padStart(2, '0');
                 const minutes = String(date.getMinutes()).padStart(2, '0');
-
+                const seconds = String(date.getSeconds()).padStart(2, '0');
                 // 格式化成 "YYYY/MM/DD HH:mm"
-                const formattedDate = `${year}/${month}/${day} ${hours}:${minutes}`;
-                console.log("formattedDate:", formattedDate); // 输出: 2023/10/05 00:00
+                const formattedDate = `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
+                console.log("formattedDate:", formattedDate); // 输出: 2023/10/05 00:00:00
 
                 // 加载图片并提取EXIF数据
                 img.onload = () => {
                     EXIF.getData(img, function() {
-                        console.log('getData', this);
-                        // 这里面可以看到值，想要什么直接获取即可。
-                        console.log('getAllTags', EXIF.getAllTags(this));
                         const date = EXIF.getTag(this, "DateTimeOriginal");
                         const location = EXIF.getTag(this, "GPSLatitude") ? 
                             `${EXIF.getTag(this, "GPSLatitude")}, ${EXIF.getTag(this, "GPSLongitude")}` : '未知地点';
                             let formattedTime = '未知时间';
                             if (date) {
-                                formattedTime = date.replace(/:/g, '/').slice(0, 16); // 替换冒号为斜杠，并截取前16个字符
-                            }
+                                formattedTime = date.replace(/(\d{4}):(\d{2}):(\d{2}) (\d{2}:\d{2}:\d{2})/, '$1/$2/$3 $4');                                  }
                         // 更新信息卡片内容
                         infoCard.innerHTML = `
                             <p>地点(自动获取): <span class="location">${location}</span></p>
@@ -161,17 +158,40 @@ document.getElementById('search-form').onsubmit = async function(event) {
             const infoCard = document.createElement('div');
             infoCard.className = 'info-card';
 
-            // 格式化时间
-            const dateStr = new Date(photo.time);
-            const formattedDate = `${dateStr.getFullYear()}/${String(dateStr.getMonth() + 1).padStart(2, '0')}/${String(dateStr.getDate()).padStart(2, '0')} ${String(dateStr.getHours()).padStart(2, '0')}:${String(dateStr.getMinutes()).padStart(2, '0')}`;
+            const dateStr  = new Date(photo.time);
+            const date = new Date(dateStr);
+            // 获取年份、月份和日期
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0'); // 月份从0开始，所以加1
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            const seconds = String(date.getSeconds()).padStart(2, '0');
+            // 格式化成 "YYYY/MM/DD HH:mm"
+            const formattedDate = `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
+            console.log("formattedDate:", formattedDate); // 输出: 2023/10/05 00:00:00
 
-            // 更新信息卡片内容
-            infoCard.innerHTML = `
-                <p>地点: <span class="location">${photo.place}</span></p>
-                <p>时间: <span class="time">${formattedDate}</span></p>
-                <p>主题: <span class="theme">${photo.theme}</span></p>
-                <p>描述: <span class="description">${photo.description}</span></p>
-            `;
+            // 加载图片并提取EXIF数据
+            img.onload = () => {
+                EXIF.getData(img, function() {
+                    const date = EXIF.getTag(this, "DateTimeOriginal");
+                    const location = EXIF.getTag(this, "GPSLatitude") ? 
+                        `${EXIF.getTag(this, "GPSLatitude")}, ${EXIF.getTag(this, "GPSLongitude")}` : '未知地点';
+                        let formattedTime = '未知时间';
+                        if (date) {
+                            console.log("自动获取的时间格式",date)
+                            formattedTime = date.replace(/(\d{4}):(\d{2}):(\d{2}) (\d{2}:\d{2}:\d{2})/, '$1/$2/$3 $4');                        }
+                    // 更新信息卡片内容
+                    infoCard.innerHTML = `
+                        <p>地点(自动获取): <span class="location">${location}</span></p>
+                        <p>地点(用户输入): <span class="location">${photo.place}</span></p>
+                        <p>时间(自动获取): <span class="time">${formattedTime}</span></p>
+                        <p>时间(用户输入): <span class="time">${formattedDate}</span></p>
+                        <p>主题: <span class="theme">${photo.theme}</span></p>
+                        <p>描述: <span class="description">${photo.description}</span></p>
+                    `;
+                });
+            };
 
             const zoomButton = document.createElement('button');
             zoomButton.className = 'zoom-button';
